@@ -1,58 +1,50 @@
-# Advanced Roblox Studio AI Assistant (MCP)
+# Roblox Studio MCP Assistant - Quick Start
 
-This project implements a Model Context Protocol (MCP) server that bridges Cursor AI to Roblox Studio, providing over 40+ tools to manipulate the game environment directly from the AI.
+## 1. Installation
 
-## Prerequisites
-- Node.js installed.
-- Roblox Studio installed.
+### Step A: Setup Node Server
+1. Open terminal in this folder (`D:\lickato'ing`).
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Build the server:
+   ```bash
+   npm run build
+   ```
 
-## Setup
+### Step B: Install Roblox Plugin
+1. Copy the file `plugin/loader.server.lua` from this folder.
+2. Open **Roblox Studio**.
+3. Right-click **ServerScriptService** in the Explorer -> **Paste into**.
+4. (Optional) For permanent installation, save it to your local Plugins folder (`%LOCALAPPDATA%\Roblox\Plugins`).
 
-1.  **Install Dependencies**:
-    ```bash
-    npm install
-    ```
+### Step C: Configure Cursor MCP
+Add this to your MCP settings (Settings > Features > MCP > Edit in settings.json):
 
-2.  **Build the Project**:
-    ```bash
-    npm run build
-    ```
+```json
+{
+  "roblox-studio": {
+    "command": "node",
+    "args": [
+      "D:\\lickato'ing\\dist\\index.js"
+    ]
+  }
+}
+```
 
-3.  **Install the Roblox Plugin**:
-    - Locate the file `plugin/loader.server.lua` in this project.
-    - Copy this file.
-    - Open your Roblox Plugins folder:
-      - Windows: `%LOCALAPPDATA%\Roblox\Plugins`
-      - Mac: `~/Documents/Roblox/Plugins`
-    - Paste the file there. You may need to rename it to `McpLoader.server.lua` or similar.
-    - Alternatively, in Roblox Studio, go to the "Plugins" tab -> "Plugin Folder", and paste it there.
+## 2. Test It!
 
-4.  **Allow HTTP Requests**:
-    - In Roblox Studio, when the plugin runs, it might ask for permission to access `localhost:8081`. Grant it.
-    - If using as a game script, enable "Allow HTTP Requests" in Game Settings.
+1. **Start the Game** in Roblox Studio (Press F5 or Play).
+2. Wait for the output: `[MCP Plugin] Plugin Loaded. Polling http://localhost:8081`.
+3. Ask Cursor:
+   > "Create a bright neon blue part at position 0, 10, 0 named 'TestPart'"
 
-## Running
+## 3. Troubleshooting
 
-1.  **Start the MCP Server**:
-    You need to configure Cursor to run this server.
-    
-    Add a new MCP server in Cursor settings:
-    - **Name**: RobloxStudio
-    - **Type**: command
-    - **Command**: `node`
-    - **Args**: `D:\lickato'ing\dist\index.js` (Update path if moved)
-
-2.  **Connect**:
-    Once added, the server will start automatically. It hosts a local HTTP server on port `8081` which the Roblox plugin connects to.
-
-3.  **Usage**:
-    Ask Cursor to "Create a part", "Make a script", "Move the player", etc.
-
-## Architecture
-- **MCP Server (Node.js)**: Receives commands from Cursor and queues them.
-- **Roblox Plugin (Lua)**: Polls the Node server every 0.5s for new commands, executes them, and returns results.
-
-## Troubleshooting
-- **"Timeout"**: Ensure the Roblox Plugin is running (Studio is open).
-- **"Connection Refused"**: Ensure the Node server is running (Cursor should start it).
-
+| Issue | Solution |
+|-------|----------|
+| **"Connection Refused"** | Ensure the Node server is running. Cursor starts it automatically when you add it to MCP settings. Check Cursor logs if it fails. |
+| **"Timeout" / No Response** | Make sure you hit **Play** in Roblox Studio. The plugin only runs when the game (or plugin script) is running. |
+| **HTTP 403 (Forbidden)** | In Roblox Studio, go to **Home** > **Game Settings** > **Security** and enable **Allow HTTP Requests**. |
+| **"Module not found"** | Did you run `npm install` and `npm run build`? Check the `dist` folder exists. |
