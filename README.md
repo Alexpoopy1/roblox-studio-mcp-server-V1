@@ -3,7 +3,7 @@
 ## 1. Installation
 
 ### Step A: Setup Node Server
-1. Open terminal in this folder (`D:\lickato'ing`).
+1. Open terminal in this folder (`C:/Desktop/roblox-studio-mcp-server-V1`).
 2. Install dependencies:
    ```bash
    npm install
@@ -27,7 +27,7 @@ Add this to your MCP settings (Settings > Features > MCP > Edit in settings.json
   "roblox-studio": {
     "command": "node",
     "args": [
-      "D:\\lickato'ing\\dist\\index.js"
+      "C:\\PATH-TO-roblox-studio-mcp-server-V1\\lickato'ing\\dist\\index.js"
     ]
   }
 }
@@ -48,3 +48,4 @@ Add this to your MCP settings (Settings > Features > MCP > Edit in settings.json
 | **"Timeout" / No Response** | Make sure you hit **Play** in Roblox Studio. The plugin only runs when the game (or plugin script) is running. |
 | **HTTP 403 (Forbidden)** | In Roblox Studio, go to **Home** > **Game Settings** > **Security** and enable **Allow HTTP Requests**. |
 | **"Module not found"** | Did you run `npm install` and `npm run build`? Check the `dist` folder exists. |
+
