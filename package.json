@@ -1,0 +1,22 @@
+{
+  "name": "roblox-mcp-assistant",
+  "version": "1.0.0",
+  "description": "MCP Server for Roblox Studio",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "body-parser": "^1.20.2",
+    "express": "^4.18.2",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.11.0",
+    "typescript": "^5.3.3"
+  }
+}
+
