@@ -449,6 +449,209 @@ function Tools.Chat(p)
 	return "Chat not supported in this context"
 end
 
+-- 42. ReplaceScriptLines
+function Tools.ReplaceScriptLines(p)
+	local obj = resolvePath(p.path)
+	if obj and obj:IsA("LuaSourceContainer") then
+		local lines = obj.Source:split("\n")
+		local newLines = {}
+		local contentLines = p.content:split("\n")
+		
+		-- Add lines before start
+		for i = 1, p.startLine - 1 do
+			if i <= #lines then table.insert(newLines, lines[i]) end
+		end
+		
+		-- Add new content
+		for _, l in ipairs(contentLines) do
+			table.insert(newLines, l)
+		end
+		
+		-- Add lines after end
+		for i = p.endLine + 1, #lines do
+			table.insert(newLines, lines[i])
+		end
+		
+		obj.Source = table.concat(newLines, "\n")
+		return "Replaced"
+	end
+	error("Not a script")
+end
+
+-- 43. InsertScriptLines
+function Tools.InsertScriptLines(p)
+	local obj = resolvePath(p.path)
+	if obj and obj:IsA("LuaSourceContainer") then
+		local lines = obj.Source:split("\n")
+		local contentLines = p.content:split("\n")
+		
+		local newLines = {}
+		local insertAt = math.clamp(p.lineNumber, 1, #lines + 1)
+		
+		for i = 1, insertAt - 1 do
+			table.insert(newLines, lines[i])
+		end
+		
+		for _, l in ipairs(contentLines) do
+			table.insert(newLines, l)
+		end
+		
+		for i = insertAt, #lines do
+			table.insert(newLines, lines[i])
+		end
+		
+		obj.Source = table.concat(newLines, "\n")
+		return "Inserted"
+	end
+	error("Not a script")
+end
+
+-- 44. SetAttribute
+function Tools.SetAttribute(p)
+	local obj = resolvePath(p.path)
+	if obj then
+		obj:SetAttribute(p.name, p.value)
+		return "Set"
+	end
+	error("Object not found")
+end
+
+-- 45. GetAttribute
+function Tools.GetAttribute(p)
+	local obj = resolvePath(p.path)
+	if obj then
+		return obj:GetAttribute(p.name)
+	end
+	error("Object not found")
+end
+
+-- 46. GetAttributes
+function Tools.GetAttributes(p)
+	local obj = resolvePath(p.path)
+	if obj then
+		return obj:GetAttributes()
+	end
+	error("Object not found")
+end
+
+-- 47. AddTag
+function Tools.AddTag(p)
+	local obj = resolvePath(p.path)
+	if obj then
+		game:GetService("CollectionService"):AddTag(obj, p.tag)
+		return "Added"
+	end
+	error("Object not found")
+end
+
+-- 48. RemoveTag
+function Tools.RemoveTag(p)
+	local obj = resolvePath(p.path)
+	if obj then
+		game:GetService("CollectionService"):RemoveTag(obj, p.tag)
+		return "Removed"
+	end
+	error("Object not found")
+end
+
+-- 49. GetTags
+function Tools.GetTags(p)
+	local obj = resolvePath(p.path)
+	if obj then
+		return game:GetService("CollectionService"):GetTags(obj)
+	end
+	error("Object not found")
+end
+
+-- 50. HasTag
+function Tools.HasTag(p)
+	local obj = resolvePath(p.path)
+	if obj then
+		return game:GetService("CollectionService"):HasTag(obj, p.tag)
+	end
+	error("Object not found")
+end
+
+-- 51. PivotTo
+function Tools.PivotTo(p)
+	local obj = resolvePath(p.path)
+	if obj and obj:IsA("PVInstance") then
+		local cf = CFrame.new(unpack(p.cframe))
+		obj:PivotTo(cf)
+		return "Pivoted"
+	end
+	error("Not a PVInstance")
+end
+
+-- 52. GetPivot
+function Tools.GetPivot(p)
+	local obj = resolvePath(p.path)
+	if obj and obj:IsA("PVInstance") then
+		local cf = obj:GetPivot()
+		return {cf:GetComponents()}
+	end
+	error("Not a PVInstance")
+end
+
+-- 53. PlaySound
+function Tools.PlaySound(p)
+	local sound = Instance.new("Sound")
+	sound.SoundId = p.soundId
+	sound.Volume = p.volume or 1
+	
+	local parent
+	if p.parentPath then
+		parent = resolvePath(p.parentPath)
+	else
+		parent = game:GetService("SoundService")
+	end
+	
+	sound.Parent = parent
+	sound:Play()
+	game:GetService("Debris"):AddItem(sound, 10) -- Cleanup after 10s (simple)
+	return sound:GetFullName()
+end
+
+-- 54. StopSound
+function Tools.StopSound(p)
+	local obj = resolvePath(p.path)
+	if obj and obj:IsA("Sound") then
+		obj:Stop()
+		return "Stopped"
+	end
+	error("Not a sound")
+end
+
+-- 55. GetDistance
+function Tools.GetDistance(p)
+	local obj1 = resolvePath(p.path1)
+	local obj2 = resolvePath(p.path2)
+	
+	if obj1 and obj2 and obj1:IsA("PVInstance") and obj2:IsA("PVInstance") then
+		local pos1 = obj1:IsA("BasePart") and obj1.Position or obj1:GetPivot().Position
+		local pos2 = obj2:IsA("BasePart") and obj2.Position or obj2:GetPivot().Position
+		return (pos1 - pos2).Magnitude
+	end
+	error("Objects not found or invalid")
+end
+
+-- 56. HighlightObject
+function Tools.HighlightObject(p)
+	local obj = resolvePath(p.path)
+	if obj then
+		local hl = Instance.new("Highlight")
+		if p.color then
+			hl.FillColor = Color3.fromRGB(unpack(p.color))
+		end
+		hl.Parent = obj
+		if p.duration then
+			game:GetService("Debris"):AddItem(hl, p.duration)
+		end
+		return hl:GetFullName()
+	end
+	error("Object not found")
+end
+
 local function handleCommand(cmd)
 	local func = Tools[cmd.method]
 	if func then
