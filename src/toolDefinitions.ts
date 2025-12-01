@@ -34,13 +34,13 @@ export const tools: Tool[] = [
       properties: {
         path: { type: "string" },
         property: { type: "string" },
-        value: { 
+        value: {
           anyOf: [
             { type: "string" },
             { type: "number" },
             { type: "boolean" }
           ],
-          description: "Value to set" 
+          description: "Value to set"
         }
       },
       required: ["path", "property", "value"]
@@ -480,6 +480,194 @@ export const tools: Tool[] = [
         color: { type: "string", enum: ["Red", "Blue", "Green", "White"] }
       },
       required: ["message"]
+    }
+  },
+  {
+    name: "ReplaceScriptLines",
+    description: "Replace a range of lines in a script",
+    inputSchema: {
+      type: "object",
+      properties: {
+        path: { type: "string" },
+        startLine: { type: "number" },
+        endLine: { type: "number" },
+        content: { type: "string" }
+      },
+      required: ["path", "startLine", "endLine", "content"]
+    }
+  },
+  {
+    name: "InsertScriptLines",
+    description: "Insert lines at a specific position in a script",
+    inputSchema: {
+      type: "object",
+      properties: {
+        path: { type: "string" },
+        lineNumber: { type: "number" },
+        content: { type: "string" }
+      },
+      required: ["path", "lineNumber", "content"]
+    }
+  },
+  {
+    name: "SetAttribute",
+    description: "Set an attribute on an instance",
+    inputSchema: {
+      type: "object",
+      properties: {
+        path: { type: "string" },
+        name: { type: "string" },
+        value: {
+          anyOf: [
+            { type: "string" },
+            { type: "number" },
+            { type: "boolean" }
+          ]
+        }
+      },
+      required: ["path", "name", "value"]
+    }
+  },
+  {
+    name: "GetAttribute",
+    description: "Get an attribute value",
+    inputSchema: {
+      type: "object",
+      properties: {
+        path: { type: "string" },
+        name: { type: "string" }
+      },
+      required: ["path", "name"]
+    }
+  },
+  {
+    name: "GetAttributes",
+    description: "Get all attributes of an instance",
+    inputSchema: {
+      type: "object",
+      properties: {
+        path: { type: "string" }
+      },
+      required: ["path"]
+    }
+  },
+  {
+    name: "AddTag",
+    description: "Add a CollectionService tag",
+    inputSchema: {
+      type: "object",
+      properties: {
+        path: { type: "string" },
+        tag: { type: "string" }
+      },
+      required: ["path", "tag"]
+    }
+  },
+  {
+    name: "RemoveTag",
+    description: "Remove a CollectionService tag",
+    inputSchema: {
+      type: "object",
+      properties: {
+        path: { type: "string" },
+        tag: { type: "string" }
+      },
+      required: ["path", "tag"]
+    }
+  },
+  {
+    name: "GetTags",
+    description: "Get all tags on an instance",
+    inputSchema: {
+      type: "object",
+      properties: {
+        path: { type: "string" }
+      },
+      required: ["path"]
+    }
+  },
+  {
+    name: "HasTag",
+    description: "Check if an instance has a tag",
+    inputSchema: {
+      type: "object",
+      properties: {
+        path: { type: "string" },
+        tag: { type: "string" }
+      },
+      required: ["path", "tag"]
+    }
+  },
+  {
+    name: "PivotTo",
+    description: "Set CFrame of a PVInstance (Model/Part) using PivotTo",
+    inputSchema: {
+      type: "object",
+      properties: {
+        path: { type: "string" },
+        cframe: { type: "array", items: { type: "number" }, minItems: 12, maxItems: 12, description: "12 numbers for CFrame components" }
+      },
+      required: ["path", "cframe"]
+    }
+  },
+  {
+    name: "GetPivot",
+    description: "Get CFrame of a PVInstance",
+    inputSchema: {
+      type: "object",
+      properties: {
+        path: { type: "string" }
+      },
+      required: ["path"]
+    }
+  },
+  {
+    name: "PlaySound",
+    description: "Create and play a sound",
+    inputSchema: {
+      type: "object",
+      properties: {
+        soundId: { type: "string" },
+        parentPath: { type: "string", description: "Optional parent, defaults to SoundService" },
+        volume: { type: "number" }
+      },
+      required: ["soundId"]
+    }
+  },
+  {
+    name: "StopSound",
+    description: "Stop a sound",
+    inputSchema: {
+      type: "object",
+      properties: {
+        path: { type: "string" }
+      },
+      required: ["path"]
+    }
+  },
+  {
+    name: "GetDistance",
+    description: "Calculate distance between two objects",
+    inputSchema: {
+      type: "object",
+      properties: {
+        path1: { type: "string" },
+        path2: { type: "string" }
+      },
+      required: ["path1", "path2"]
+    }
+  },
+  {
+    name: "HighlightObject",
+    description: "Add a Highlight to an object",
+    inputSchema: {
+      type: "object",
+      properties: {
+        path: { type: "string" },
+        color: { type: "array", items: { type: "number" } },
+        duration: { type: "number", description: "Optional duration in seconds" }
+      },
+      required: ["path"]
     }
   }
 ];
