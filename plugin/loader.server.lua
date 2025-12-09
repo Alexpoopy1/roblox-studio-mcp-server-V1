@@ -252,7 +252,58 @@ end
 function Tools.RunConsoleCommand(p)
 	local func, err = loadstring(p.code)
 	if not func then error(err) end
-	return func()
+	
+	local logs = {}
+	local env = setmetatable({}, {__index = getfenv()})
+	
+	env.print = function(...)
+		local args = {...}
+		local strArgs = {}
+		for i, v in ipairs(args) do
+			table.insert(strArgs, tostring(v))
+		end
+		local line = table.concat(strArgs, " ")
+		table.insert(logs, line)
+		print(unpack(args)) -- Also print to real console
+	end
+	
+	env.warn = function(...)
+		local args = {...}
+		local strArgs = {}
+		for i, v in ipairs(args) do
+			table.insert(strArgs, tostring(v))
+		end
+		local line = "WARN: " .. table.concat(strArgs, " ")
+		table.insert(logs, line)
+		warn(unpack(args))
+	end
+	
+	setfenv(func, env)
+	
+	local results = {pcall(func)}
+	local success = results[1]
+	table.remove(results, 1) -- remove success bool
+	
+	local output = table.concat(logs, "\n")
+	
+	if not success then
+		error(output .. "\nError: " .. tostring(results[1]))
+	end
+	
+	local returnStr = ""
+	if #results > 0 then
+		local strResults = {}
+		for _, v in ipairs(results) do
+			table.insert(strResults, tostring(v))
+		end
+		returnStr = "Returned: " .. table.concat(strResults, ", ")
+	end
+	
+	if output == "" and returnStr == "" then
+		return "Executed (No output)"
+	end
+	
+	return (output ~= "" and output or "") .. (output ~= "" and returnStr ~= "" and "\n" or "") .. returnStr
 end
 
 -- 22. GetSelection
