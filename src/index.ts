@@ -11,14 +11,13 @@ import { bridge } from './bridge';
 
 // --- Express Server for Roblox Bridge ---
 const app = express();
-const PORT = 8086;
+const PORT = 8081;
 
 app.use(bodyParser.json());
 
 // Endpoint for Roblox to poll for commands
 app.get('/poll', (req, res) => {
-  const context = (req.query.context as string) || 'edit';
-  const commands = bridge.getPendingCommands(context);
+  const commands = bridge.getPendingCommands();
   res.json(commands);
 });
 
@@ -66,7 +65,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   try {
     // Forward to Roblox Bridge
     const result = await bridge.execute(toolName, args);
-
+    
     // Format output for MCP
     return {
       content: [
