@@ -103,9 +103,36 @@ function Tools.RunConsoleCommand(p)
 		local runId = "MCP_RUN_" .. math.random(1000, 9999)
 		local scriptObj = Instance.new("Script")
 		scriptObj.Name = runId
-		scriptObj.Source = "local s,r=pcall(function()\n"
+		scriptObj.Source = "local logs = {}\n"
+			.. "local oldPrint = print\n"
+			.. "local function print(...)\n"
+			.. "    local args = {...}\n"
+			.. "    local strArgs = {}\n"
+			.. "    for i, v in ipairs(args) do\n"
+			.. "        table.insert(strArgs, tostring(v))\n"
+			.. "    end\n"
+			.. "    local msg = table.concat(strArgs, ' ')\n"
+			.. "    table.insert(logs, msg)\n"
+			.. "    task.spawn(oldPrint, unpack(args))\n"
+			.. "end\n"
+			.. "local s,r=pcall(function()\n"
 			.. p.code
-			.. "\nend)\nscript:SetAttribute('Success',s)\nscript:SetAttribute('Result',tostring(r))\nscript:SetAttribute('Completed',true)"
+			.. "\nend)\n"
+			.. "local output = table.concat(logs, '\\n')\n"
+			.. "local resultStr = ''\n"
+			.. "if r ~= nil then\n"
+			.. "    resultStr = 'Returned: ' .. tostring(r)\n"
+			.. "end\n"
+			.. "local finalMsg = output\n"
+			.. "if finalMsg ~= '' and resultStr ~= '' then\n"
+			.. "    finalMsg = finalMsg .. '\\n' .. resultStr\n"
+			.. "elseif resultStr ~= '' then\n"
+			.. "    finalMsg = resultStr\n"
+			.. "end\n"
+			.. "if finalMsg == '' then finalMsg = 'Executed (No Output)' end\n"
+			.. "script:SetAttribute('Success',s)\n"
+			.. "script:SetAttribute('Result',finalMsg)\n"
+			.. "script:SetAttribute('Completed',true)"
 		scriptObj.Parent = game:GetService("ServerScriptService")
 		local start = tick()
 		while not scriptObj:GetAttribute("Completed") and tick() - start < 10 do
@@ -121,7 +148,7 @@ function Tools.RunConsoleCommand(p)
 		if not ok then
 			error("Injection Error: " .. tostring(res))
 		end
-		return "Executed via Injection: " .. tostring(res)
+		return tostring(res)
 	end
 end
 
